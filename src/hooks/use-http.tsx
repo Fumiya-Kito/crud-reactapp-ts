@@ -1,19 +1,19 @@
-import {useState} from 'react';
+import { useState, useCallback } from 'react';
 
-const useHttp = (requestConfig: {url: string, method: string, headers: HeadersInit, body: string}, applyData: (data: JSON) => void) => {
+const useHttp = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const sendRequest = async () => {
+  const sendRequest = useCallback(async (requestConfig: { url: string, method?: string, headers?: HeadersInit, body?: {} }, applyData: (data: { id: string, name: string }[]) => void) => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await fetch(
         requestConfig.url, {
-          method: requestConfig.method,
-          headers: requestConfig.headers,
-          body: JSON.stringify(requestConfig.body)
-        }
+        method: requestConfig.method ? requestConfig.method : 'GET',
+        headers: requestConfig.headers ? requestConfig.headers : {},
+        body: requestConfig.body ? JSON.stringify(requestConfig.body) : null
+      }
       );
 
       if (!response.ok) {
@@ -21,19 +21,13 @@ const useHttp = (requestConfig: {url: string, method: string, headers: HeadersIn
       }
 
       const data = await response.json();
-
-      const loadedTasks = [];
-
-      for (const taskKey in data) {
-        loadedTasks.push({ id: taskKey, text: data[taskKey].text });
-      }
-
       applyData(data);
+
     } catch (err: unknown) {
       setError('Something went wrong!');
     }
     setIsLoading(false);
-  };
+  }, []);
 
   return {
     isLoading,
