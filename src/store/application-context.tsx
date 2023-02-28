@@ -1,19 +1,19 @@
-import React, { useState, ReactNode } from "react"
+import React, { useState, useCallback, ReactNode } from "react"
 import Application from "../models/application"
 
 
 type ApplicationContextObj = {
   items: Application[],
   addApplication: (id: string, text: string) => void,
-  readApplication: (id: string) => void,
+  readApplications: (objs: {id: string, name: string}[]) => void,
   updateApplication: (id: string, text: string) => void,
   removeApplication: (id: string) => void,
 }
 
-export const TodoContext = React.createContext<ApplicationContextObj>({
+export const ApplicationContext = React.createContext<ApplicationContextObj>({
   items: [],
   addApplication: (text: string) => {},
-  readApplication: (id: string) => {},
+  readApplications: (objs: {id: string, name: string}[]) => {},
   updateApplication: (id: string, text: string) => {},
   removeApplication: (id: string) => {},
 })
@@ -38,28 +38,28 @@ const TodoContextProvider: React.FC<BaseLayoutProps> = (props) => {
       return prevApplications.filter(item => item.id !== applicationId)
     })
   }
-  
-  const readApplicationHandler = (applicationId: string) => {
-    return applications.filter(item => item.id === applicationId)
-  }
 
-  const updateApplicationHandler = (applicationId: string, applicationText: string) => {
-    const prevApplication = applications.filter(item => item.id === applicationId)[0]
-    prevApplication.updateApplication(applicationText)
+  const readApplicationsHandler = useCallback((applicationObjs: {id:string, name: string}[]) => {
+    setApplications(applicationObjs.map(obj => new Application(obj.id, obj.name)))
+  }, [])
+
+  const updateApplicationItemHandler = (applicationId: string, applicationText: string) => {
+    const prevApplicationItem = applications.filter(item => item.id === applicationId)[0]
+    prevApplicationItem.updateApplication(applicationText)
   }
 
   const contextValue: ApplicationContextObj = {
     items: applications,
     addApplication: addApplicationHandler,
-    readApplication: readApplicationHandler,
-    updateApplication: updateApplicationHandler,
+    readApplications: readApplicationsHandler,
+    updateApplication: updateApplicationItemHandler,
     removeApplication: removeApplicationHandler,
   }
   
 
-  return <TodoContext.Provider value={contextValue}>
+  return <ApplicationContext.Provider value={contextValue}>
     { props.children }
-  </TodoContext.Provider>
+  </ApplicationContext.Provider>
 }
 
 export default TodoContextProvider;
