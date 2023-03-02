@@ -1,15 +1,21 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import { ApplicationContext } from "../store/application-context"
 import useHttp from "../hooks/use-http";
 import ApplicationList from "../components/ApplicaionList";
+import NewApplication from '../components/NewApplication';
 
 
 const AllApplications: React.FC = () => {
+  const [postSuccess, setPostSuccess] = useState(false)
   const applicationCtx = useContext(ApplicationContext);
   const { readApplications } = applicationCtx
 
   const httpData = useHttp();
   const { isLoading, error, sendRequest: fetchApplications } = httpData;
+
+  const postSuccessHandler = () => {
+    setPostSuccess(!postSuccess)
+  }
 
 
   useEffect(() => {
@@ -18,19 +24,22 @@ const AllApplications: React.FC = () => {
       for (const applicationKey in responseData) {
         loadedApplications.push({ id: applicationKey, name: responseData[applicationKey].name });
       }
-      console.log(responseData)
+      // console.log(responseData)
       readApplications(loadedApplications);
     }
     fetchApplications({ url: 'https://react-http-eb5ad-default-rtdb.firebaseio.com/applications.json' }, transformApplications)
-  }, [fetchApplications, readApplications])
+  }, [fetchApplications, readApplications, postSuccess])
 
-  return <ul>
-    {error && <p>{error}</p>}
-    {isLoading ? <p>Loading</p>
-      : applicationCtx.items.length === 0 ? <p>No Items</p>
-      : <ApplicationList applications={applicationCtx.items} />
-    }
-  </ul>
+  return <>
+    <NewApplication onPostSuccess={postSuccessHandler}/>
+    <ul>
+      {error && <p>{error}</p>}
+      {isLoading ? <p>Loading</p>
+        : applicationCtx.items.length === 0 ? <p>No Items</p>
+        : <ApplicationList applications={applicationCtx.items} />
+      }
+    </ul>
+  </>
 }
 
 
