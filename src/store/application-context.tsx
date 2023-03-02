@@ -4,7 +4,6 @@ import Application from "../models/application"
 
 type ApplicationContextObj = {
   items: Application[],
-  addApplication: (id: string, text: string) => void,
   readApplications: (objs: {id: string, name: string}[]) => void,
   updateApplication: (id: string, text: string) => void,
   removeApplication: (id: string) => void,
@@ -12,9 +11,8 @@ type ApplicationContextObj = {
 
 export const ApplicationContext = React.createContext<ApplicationContextObj>({
   items: [],
-  addApplication: (text: string) => {},
   readApplications: (objs: {id: string, name: string}[]) => {},
-  updateApplication: (id: string, text: string) => {},
+  updateApplication: (id: string, name: string) => {},
   removeApplication: (id: string) => {},
 })
 
@@ -26,12 +24,12 @@ interface BaseLayoutProps {
 const TodoContextProvider: React.FC<BaseLayoutProps> = (props) => {
   const [applications, setApplications] = useState<Application[]>([])
 
-  const addApplicationHandler = (applicationId: string, applicationText: string) => {
-    const newApplication = new Application(applicationId, applicationText);
-    setApplications((prevApplications) => {
-      return prevApplications.concat(newApplication)
-    })
-  }
+  // const addApplicationHandler = (applicationId: string, applicationText: string) => {
+  //   const newApplication = new Application(applicationId, applicationText);
+  //   setApplications((prevApplications) => {
+  //     return prevApplications.concat(newApplication)
+  //   })
+  // }
 
   const removeApplicationHandler = (applicationId: string) => {
     setApplications((prevApplications) => {
@@ -50,7 +48,6 @@ const TodoContextProvider: React.FC<BaseLayoutProps> = (props) => {
 
   const contextValue: ApplicationContextObj = {
     items: applications,
-    addApplication: addApplicationHandler,
     readApplications: readApplicationsHandler,
     updateApplication: updateApplicationItemHandler,
     removeApplication: removeApplicationHandler,
