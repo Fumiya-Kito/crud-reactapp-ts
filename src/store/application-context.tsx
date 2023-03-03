@@ -39,6 +39,7 @@ const TodoContextProvider: React.FC<BaseLayoutProps> = (props) => {
 
   const readApplicationsHandler = useCallback((applicationObjs: {id:string, name: string}[]) => {
     setApplications(applicationObjs.map(obj => new Application(obj.id, obj.name)))
+    console.log(applicationObjs[0].id)
   }, [])
 
   const updateApplicationItemHandler = (applicationId: string, applicationText: string) => {
