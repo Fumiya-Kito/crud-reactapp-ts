@@ -4,7 +4,8 @@ const useHttp = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const sendRequest = useCallback(async (requestConfig: { url: string, method?: string, headers?: HeadersInit, body?: {} }, applyData?: (data: { id: string, name: string }[]) => void) => {
+  // const sendRequest = useCallback(async (requestConfig: { url: string, method?: string, headers?: HeadersInit, body?: {} }, applyData?: (data: { id: string, name: string }[]) => void) => {
+  const sendRequest = useCallback(async (requestConfig: { url: string, method?: string, headers?: HeadersInit, body?: {} }, applyData?: any) => {
     setIsLoading(true);
     setError(null);
     try {
