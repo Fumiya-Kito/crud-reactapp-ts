@@ -24,7 +24,7 @@ const AllApplications: React.FC = () => {
       for (const applicationKey in responseData) {
         loadedApplications.push({ id: applicationKey, name: responseData[applicationKey].name });
       }
-      // console.log(responseData)
+      console.log(responseData)
       readApplications(loadedApplications);
     }
     fetchApplications({ url: 'https://react-http-eb5ad-default-rtdb.firebaseio.com/applications.json' }, transformApplications)
