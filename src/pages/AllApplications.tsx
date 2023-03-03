@@ -6,15 +6,15 @@ import NewApplication from '../components/NewApplication';
 
 
 const AllApplications: React.FC = () => {
-  const [postSuccess, setPostSuccess] = useState(false)
+  const [isHttpSuccess, setIsHttpSuccess] = useState(false)
   const applicationCtx = useContext(ApplicationContext);
   const { readApplications } = applicationCtx
 
   const httpData = useHttp();
   const { isLoading, error, sendRequest: fetchApplications } = httpData;
 
-  const postSuccessHandler = () => {
-    setPostSuccess(!postSuccess)
+  const httpSuccessHandler = () => {
+    setIsHttpSuccess(!isHttpSuccess)
   }
 
 
@@ -28,15 +28,15 @@ const AllApplications: React.FC = () => {
       readApplications(loadedApplications);
     }
     fetchApplications({ url: 'https://react-http-eb5ad-default-rtdb.firebaseio.com/applications.json' }, transformApplications)
-  }, [fetchApplications, readApplications, postSuccess])
+  }, [fetchApplications, readApplications, isHttpSuccess])
 
   return <>
-    <NewApplication onPostSuccess={postSuccessHandler}/>
+    <NewApplication onPostSuccess={httpSuccessHandler}/>
     <ul>
       {error && <p>{error}</p>}
       {isLoading ? <p>Loading</p>
         : applicationCtx.items.length === 0 ? <p>No Items</p>
-        : <ApplicationList applications={applicationCtx.items} />
+        : <ApplicationList applications={applicationCtx.items} onPutSuccess={httpSuccessHandler}/>
       }
     </ul>
   </>

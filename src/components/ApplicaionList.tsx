@@ -5,19 +5,19 @@ import { useContext } from "react";
 import { ApplicationContext } from "../store/application-context";
 
 
-const ApplicationList: React.FC<{ applications: Application[] }> = (props) => {
+const ApplicationList: React.FC<{ applications: Application[], onPutSuccess: () => void }> = (props) => {
   const applicationCtx = useContext(ApplicationContext)
   const { removeApplication } = applicationCtx
-  const { sendRequest: deleteApplication} = useHttp()
+  const { sendRequest} = useHttp()
 
   const deleteApplicationHandler = (id: string) => {
-    deleteApplication({ url: `https://react-http-eb5ad-default-rtdb.firebaseio.com/applications/${id}.json`, method: 'DELETE'}
+    sendRequest({ url: `https://react-http-eb5ad-default-rtdb.firebaseio.com/applications/${id}.json`, method: 'DELETE'}
     , removeApplication(id))
   }
 
   return <>
     <ul>
-      { props.applications.map(item => <ApplicaionItem key={item.id} name={item.name} onDelete={deleteApplicationHandler.bind(null, item.id)}/>) }
+      { props.applications.map(item => <ApplicaionItem key={item.id} id={item.id} name={item.name} onDelete={deleteApplicationHandler.bind(null, item.id)} onPutSuccess={props.onPutSuccess}/>) }
     </ul>
   </>
 }

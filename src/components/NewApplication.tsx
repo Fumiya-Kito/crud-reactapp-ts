@@ -26,7 +26,7 @@ const NewApplication: React.FC<{ onPostSuccess: () => void }> = (props) => {
     if (!error) {
       nameInputRef.current!.value = ''
     }
-    setTimeout(props.onPostSuccess, 750)
+    setTimeout(props.onPostSuccess, 1000)
     
   }
 
