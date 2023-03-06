@@ -11,8 +11,7 @@ const AllApplications: React.FC = () => {
   const { readApplications } = applicationCtx
 
   const httpData = useHttp();
-  const { isLoading, error, sendRequest: fetchApplications } = httpData;
-
+  const { status , error, sendRequest: fetchApplications } = httpData;
   const httpSuccessHandler = () => {
     setIsHttpSuccess(!isHttpSuccess)
   }
@@ -34,7 +33,7 @@ const AllApplications: React.FC = () => {
     <NewApplication onPostSuccess={httpSuccessHandler}/>
     <ul>
       {error && <p>{error}</p>}
-      {isLoading ? <p>Loading</p>
+      {status === 'pending' ? <p>Loading</p>
         : applicationCtx.items.length === 0 ? <p>No Items</p>
         : <ApplicationList applications={applicationCtx.items} onPutSuccess={httpSuccessHandler}/>
       }

@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import useHttp from '../hooks/use-http';
 
 const ApplicationForm: React.FC<{ id: string, onPutSuccess: () => void }> = (props) => {
-  const { isLoading, error, sendRequest } = useHttp()
+  const { status, error, sendRequest } = useHttp()
   const nameInputRef = useRef<HTMLInputElement>(null)
 
 
@@ -29,7 +29,7 @@ const ApplicationForm: React.FC<{ id: string, onPutSuccess: () => void }> = (pro
 
   return (
     <>
-      {isLoading ? <p>Pending...</p>
+      {status === 'pending' ? <p>Pending...</p>
         :
         <form onSubmit={submitHandler}>
           <label htmlFor='text'>Change Your Name to</label>
