@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import useHttp from '../hooks/use-http';
 import { updateApplication } from '../lib/api';
 
@@ -19,8 +19,13 @@ const ApplicationForm: React.FC<{ id: string, onHttpSuccess: () => void }> = (pr
     if (!error) {
       nameInputRef.current!.value = ''
     }
-    setTimeout(props.onHttpSuccess, 1000)
   }
+
+  useEffect(() => {
+    if (status === 'completed') {
+      props.onHttpSuccess()
+    }
+  }, [props, status])
 
   return (
     <>

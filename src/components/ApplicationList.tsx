@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import ApplicationItem from "./ApplicationItem";
 import Application from "../models/application";
 import useHttp from "../hooks/use-http";
@@ -11,8 +12,14 @@ const ApplicationList: React.FC<{
 
   const deleteApplicationHandler = (id: string) => {
     sendRequest(null, id);
-    setTimeout(props.onHttpSuccess, 1000);
   };
+
+  useEffect(() => {
+    if (status === 'completed') {
+      props.onHttpSuccess()
+    }
+  }, [props, status])
+  
 
   return (
     <>

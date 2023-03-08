@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import useHttp from '../hooks/use-http';
 import { createApplication } from '../lib/api';
 
@@ -18,9 +18,15 @@ const NewApplication: React.FC<{ onPostSuccess: () => void }> = (props) => {
     if (!error) {
       nameInputRef.current!.value = ''
     }
-    setTimeout(props.onPostSuccess, 1000)
+    // setTimeout(props.onPostSuccess, 1000)
   }
 
+  useEffect(() => {
+    if (status === 'completed') {
+      props.onPostSuccess()
+    }
+  }, [props, status])
+  
 
   return  <>
     { error ? <p>{error}</p> :

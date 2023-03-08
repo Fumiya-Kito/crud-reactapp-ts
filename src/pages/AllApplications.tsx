@@ -9,8 +9,8 @@ import { readAllApplications } from "../lib/api";
 const AllApplications: React.FC = () => {
   const [isHttpSuccess, setIsHttpSuccess] = useState(false)
 
-  const httpData = useHttp(readAllApplications);
-  const { status , error, sendRequest: fetchApplications, data } = httpData;
+  const httpData = useHttp(readAllApplications, true);
+  const { status, error, sendRequest: fetchApplications, data } = httpData;
 
   const httpSuccessHandler = () => {
     setIsHttpSuccess(!isHttpSuccess)
@@ -19,16 +19,30 @@ const AllApplications: React.FC = () => {
   useEffect(() => {
     fetchApplications()
   }, [fetchApplications, isHttpSuccess])
-  
-  
+
+  if (status === 'pending') {
+
+    return <>
+      <p>Loading</p>
+    </>
+  }
+
+  if (error) {
+    return <>
+      <p>{error}</p>
+    </>
+  }
+
+  if (status === 'completed' && (!data || data.length === 0)) {
+    return <>
+      <p>No Items</p>
+    </>
+  }
+
   return <>
-    <NewApplication onPostSuccess={httpSuccessHandler}/>
+    <NewApplication onPostSuccess={httpSuccessHandler} />
     <ul>
-      {error && <p>{error}</p>}
-      {status === 'pending' ? <p>Loading</p>
-        : data?.length === 0 ? <p>No Items</p>
-        : data && <ApplicationList applications={data} onHttpSuccess={httpSuccessHandler}/>
-      }
+      {data && <ApplicationList applications={data} onHttpSuccess={httpSuccessHandler} />}
     </ul>
   </>
 }
