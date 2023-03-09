@@ -1,8 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useContext } from 'react';
+import { HttpContext } from '../store/http-context';
 import useHttp from '../hooks/use-http';
 import { createApplication } from '../lib/api';
 
-const NewApplication: React.FC<{ onPostSuccess: () => void }> = (props) => {
+const NewApplication: React.FC = () => {
+  const isHttpComplete = useContext(HttpContext)
+  const { changeStatus } = isHttpComplete;
+
   const nameInputRef = useRef<HTMLInputElement>(null)
   const { status, error, sendRequest } = useHttp(createApplication)
 
@@ -23,18 +27,18 @@ const NewApplication: React.FC<{ onPostSuccess: () => void }> = (props) => {
 
   useEffect(() => {
     if (status === 'completed') {
-      props.onPostSuccess()
+      changeStatus()
     }
-  }, [props, status])
+  }, [status, changeStatus])
   
 
   return  <>
     { error ? <p>{error}</p> :
     status === 'pending' ? <p>Pending...</p> :
     <form onSubmit={submitHandler}>
-      <label htmlFor='text'>Your Name</label>
+      <label htmlFor='text'>Enter Text</label>
       <input type='text' id='name' ref={nameInputRef}/>
-      <button>Add Application</button> 
+      <button>CREATE</button> 
     </form>
     }
   </>

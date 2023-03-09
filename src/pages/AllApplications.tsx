@@ -1,24 +1,21 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect } from "react"
 import useHttp from "../hooks/use-http";
 import ApplicationList from "../components/ApplicationList";
-import NewApplication from '../components/NewApplication';
 import { readAllApplications } from "../lib/api";
+import { HttpContext } from "../store/http-context";
 
 
 
 const AllApplications: React.FC = () => {
-  const [isHttpSuccess, setIsHttpSuccess] = useState(false)
+  const isHttpComplete = useContext(HttpContext)
+  const { isComplete } = isHttpComplete;
 
   const httpData = useHttp(readAllApplications, true);
   const { status, error, sendRequest: fetchApplications, data } = httpData;
 
-  const httpSuccessHandler = () => {
-    setIsHttpSuccess(!isHttpSuccess)
-  }
-
   useEffect(() => {
     fetchApplications()
-  }, [fetchApplications, isHttpSuccess])
+  }, [fetchApplications, isComplete])
 
   if (status === 'pending') {
 
@@ -40,9 +37,8 @@ const AllApplications: React.FC = () => {
   }
 
   return <>
-    <NewApplication onPostSuccess={httpSuccessHandler} />
     <ul>
-      {data && <ApplicationList applications={data} onHttpSuccess={httpSuccessHandler} />}
+      {data && <ApplicationList applications={data} />}
     </ul>
   </>
 }

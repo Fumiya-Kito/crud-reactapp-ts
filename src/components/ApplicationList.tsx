@@ -1,13 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import { HttpContext } from "../store/http-context";
 import ApplicationItem from "./ApplicationItem";
 import Application from "../models/application";
 import useHttp from "../hooks/use-http";
 import { deleteApplication } from "../lib/api";
 
-const ApplicationList: React.FC<{
-  applications: Application[];
-  onHttpSuccess: () => void;
-}> = (props) => {
+const ApplicationList: React.FC<{applications: Application[]}> = (props) => {
+  const isHttpComplete = useContext(HttpContext)
+  const { changeStatus } = isHttpComplete;
   const { status, sendRequest } = useHttp(deleteApplication);
 
   const deleteApplicationHandler = (id: string) => {
@@ -16,9 +16,9 @@ const ApplicationList: React.FC<{
 
   useEffect(() => {
     if (status === 'completed') {
-      props.onHttpSuccess()
+      changeStatus()
     }
-  }, [props, status])
+  }, [status, changeStatus])
   
 
   return (
@@ -33,7 +33,6 @@ const ApplicationList: React.FC<{
               id={item.id}
               name={item.name}
               onDelete={deleteApplicationHandler.bind(null, item.id)}
-              onHttpSuccess={props.onHttpSuccess}
             />
           ))
         )}
