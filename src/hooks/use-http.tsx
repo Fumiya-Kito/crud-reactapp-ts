@@ -1,38 +1,65 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useReducer } from 'react';
+import { Reducer } from 'react';
+import Application from '../models/application';
 
-const useHttp = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+type httpState = {
+  status: string | null,
+  error: string | null,
+  data?: Application[]
+}
 
-  // const sendRequest = useCallback(async (requestConfig: { url: string, method?: string, headers?: HeadersInit, body?: {} }, applyData?: (data: { id: string, name: string }[]) => void) => {
-  const sendRequest = useCallback(async (requestConfig: { url: string, method?: string, headers?: HeadersInit, body?: {} }, applyData?: any) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        requestConfig.url, {
-        method: requestConfig.method ? requestConfig.method : 'GET',
-        headers: requestConfig.headers ? requestConfig.headers : {},
-        body: requestConfig.body ? JSON.stringify(requestConfig.body) : null
-      }
-      );
+type httpAction = {
+  type: 'SEND' | 'SUCCESS' | 'ERROR',
+  payload?: Application[]
+}
 
-      if (!response.ok) {
-        throw new Error('Request failed!');
-      }
 
-      const data = await response.json();
-      if (applyData) applyData(data);
-
-    } catch (err: unknown) {
-      setError('Something went wrong!');
+const httpReducer: Reducer<httpState, httpAction> = (state, action) => {
+  if (action.type === 'SEND') {
+    return {
+      status: 'pending',
+      error: null,
+      data: [],
     }
-    setIsLoading(false);
-  }, []);
+  }
+  if (action.type === 'SUCCESS') {
+    return {
+      status: 'completed',
+      error: null,
+      data: action.payload
+    }
+  }
+  if (action.type === 'ERROR') {
+    return {
+      status: 'completed',
+      error: 'Something went wrong',
+      data: []
+    }
+  }
+
+  return state;
+}
+
+const useHttp = (requestAPI?: any, startWithPending?: boolean) => {
+  const [httpState, dispatch] = useReducer(httpReducer, {
+    status: startWithPending ? 'pending': null,
+    error: null,
+    data: [],
+  })
+
+  const sendRequest = useCallback(async (requestData?: { name: string } | null, id?: string,) => {
+    dispatch({ type: 'SEND' })
+    try {
+      const responseData = await requestAPI(requestData, id)
+      dispatch({ type: 'SUCCESS', payload: responseData})
+        
+    } catch (err: unknown) {
+      dispatch({ type: 'ERROR'})
+    }
+  }, [requestAPI]);
 
   return {
-    isLoading,
-    error,
+    ...httpState,
     sendRequest
   }
 }

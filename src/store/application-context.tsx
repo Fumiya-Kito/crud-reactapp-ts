@@ -24,12 +24,6 @@ interface BaseLayoutProps {
 const TodoContextProvider: React.FC<BaseLayoutProps> = (props) => {
   const [applications, setApplications] = useState<Application[]>([])
 
-  // const addApplicationHandler = (applicationId: string, applicationText: string) => {
-  //   const newApplication = new Application(applicationId, applicationText);
-  //   setApplications((prevApplications) => {
-  //     return prevApplications.concat(newApplication)
-  //   })
-  // }
 
   const removeApplicationHandler = (applicationId: string) => {
     setApplications((prevApplications) => {

@@ -1,43 +1,45 @@
-import { useContext, useEffect, useState } from "react"
-import { ApplicationContext } from "../store/application-context"
+
+import { useContext, useEffect } from "react"
 import useHttp from "../hooks/use-http";
-import ApplicationList from "../components/ApplicaionList";
-import NewApplication from '../components/NewApplication';
+import ApplicationList from "../components/ApplicationList";
+import { readAllApplications } from "../lib/api";
+import { HttpContext } from "../store/http-context";
+
 
 
 const AllApplications: React.FC = () => {
-  const [isHttpSuccess, setIsHttpSuccess] = useState(false)
-  const applicationCtx = useContext(ApplicationContext);
-  const { readApplications } = applicationCtx
+  const isHttpComplete = useContext(HttpContext)
+  const { isComplete } = isHttpComplete;
 
-  const httpData = useHttp();
-  const { isLoading, error, sendRequest: fetchApplications } = httpData;
-
-  const httpSuccessHandler = () => {
-    setIsHttpSuccess(!isHttpSuccess)
-  }
-
+  const httpData = useHttp(readAllApplications, true);
+  const { status, error, sendRequest: fetchApplications, data } = httpData;
 
   useEffect(() => {
-    const transformApplications = (responseData: { name: string }[]) => {
-      const loadedApplications = [];
-      for (const applicationKey in responseData) {
-        loadedApplications.push({ id: applicationKey, name: responseData[applicationKey].name });
-      }
-      console.log(responseData)
-      readApplications(loadedApplications);
-    }
-    fetchApplications({ url: 'https://react-http-eb5ad-default-rtdb.firebaseio.com/applications.json' }, transformApplications)
-  }, [fetchApplications, readApplications, isHttpSuccess])
+    fetchApplications()
+  }, [fetchApplications, isComplete])
+
+  if (status === 'pending') {
+
+    return <>
+      <p>Loading</p>
+    </>
+  }
+
+  if (error) {
+    return <>
+      <p>{error}</p>
+    </>
+  }
+
+  if (status === 'completed' && (!data || data.length === 0)) {
+    return <>
+      <p>No Items</p>
+    </>
+  }
 
   return <>
-    <NewApplication onPostSuccess={httpSuccessHandler}/>
     <ul>
-      {error && <p>{error}</p>}
-      {isLoading ? <p>Loading</p>
-        : applicationCtx.items.length === 0 ? <p>No Items</p>
-        : <ApplicationList applications={applicationCtx.items} onPutSuccess={httpSuccessHandler}/>
-      }
+      {data && <ApplicationList applications={data} />}
     </ul>
   </>
 }
